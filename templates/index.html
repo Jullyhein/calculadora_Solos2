@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro de Tabela</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #ffcc00; /* Amarelo */
+            color: black;
+            padding: 10px; /* Compacto */
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: white; /* Fundo branco */
+            color: black; /* Texto preto */
+        }
+
+        button {
+            background-color: #ffcc00; /* Botão amarelo */
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e6b800;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Bem-vindo à calculadora de mesas</h1>
+    </header>
+
+    <main>
+        <h2>Filtro da Calculadora</h2>
+        <form method="POST" action="{{ url_for('calculadora_mesas') }}">
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" onchange="updateMunicipios()" required>
+                <option value="">Selecione um estado</option>
+                {% for estado in estados %}
+                    <option value="{{ estado }}">{{ estado }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="municipio">Município:</label>
+            <select id="municipio" name="municipio" onchange="updateRegioes()" required>
+                <option value="">Selecione um município</option>
+            </select>
+
+            <label for="regiao">Região:</label>
+            <select id="regiao" name="regiao">
+                <option value="">Selecione uma região</option>
+            </select>
+
+            <button type="submit">Avançar</button>
+        </form>
+    </main>
+
+    <footer>
+        © 2025 SolarGroup - Todos os direitos reservados.
+    </footer>
+
+    <script>
+        // Atualizar os municípios ao selecionar um estado
+        function updateMunicipios() {
+            const estado = document.getElementById('estado').value;
+            const municipioSelect = document.getElementById('municipio');
+            const regiaoSelect = document.getElementById('regiao');
+
+            // Limpar os campos dependentes
+            municipioSelect.innerHTML = '<option value="">Selecione um município</option>';
+            regiaoSelect.innerHTML = '<option value="">Selecione uma região</option>';
+
+            if (estado) {
+                $.ajax({
+                    url: '/municipios',
+                    type: 'GET',
+                    data: { estado: estado },
+                    success: function (data) {
+                        data.forEach(function (municipio) {
+                            const option = document.createElement('option');
+                            option.value = municipio;
+                            option.textContent = municipio;
+                            municipioSelect.appendChild(option);
+                        });
+                    },
+                    error: function () {
+                        alert('Erro ao carregar municípios.');
+                    }
+                });
+            }
+        }
+
+        // Atualizar as regiões ao selecionar um município
+        function updateRegioes() {
+            const estado = document.getElementById('estado').value;
+            const municipio = document.getElementById('municipio').value;
+            const regiaoSelect = document.getElementById('regiao');
+
+            // Limpar as opções de regiões
+            regiaoSelect.innerHTML = '<option value="">Selecione uma região</option>';
+
+            if (estado && municipio) {
+                $.ajax({
+                    url: '/filtrar_regioes',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ estado: estado, municipio: municipio }),
+                    success: function (data) {
+                        if (data.regioes.length === 1) {
+                            const option = document.createElement('option');
+                            option.value = data.regioes[0];
+                            option.textContent = data.regioes[0];
+                            regiaoSelect.appendChild(option);
+                            regiaoSelect.value = data.regioes[0];
+                        } else {
+                            data.regioes.forEach(function (regiao) {
+                                const option = document.createElement('option');
+                                option.value = regiao;
+                                option.textContent = regiao;
+                                regiaoSelect.appendChild(option);
+                            });
+                        }
+                    },
+                    error: function () {
+                        alert('Erro ao carregar regiões.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

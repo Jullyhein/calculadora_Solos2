@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Mesas - SolarGroup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #ffcc00; /* Amarelo */
+            color: black;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        select:disabled {
+            background-color: #f0f0f0;
+            color: #999;
+        }
+
+        button {
+            background-color: #ffcc00; /* Amarelo */
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e6b800;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: black;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .result p {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/static/images/solar_group.png" alt="SolarGroup Logo">
+        <h1>Calculadora de Mesas</h1>
+    </header>
+
+    <main>
+        <form method="POST" action="{{ url_for('calculadora_mesas') }}">
+            <label for="poste">Poste:</label>
+            <select name="poste" id="poste" required>
+                <option value="">Selecione um poste</option>
+                {% for poste in postes %}
+                    <option value="{{ poste }}">{{ poste }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="fileiras">Fileiras:</label>
+            <select name="fileiras" id="fileiras" required>
+                <option value="">Selecione as fileiras</option>
+                {% for fileira in fileiras %}
+                    <option value="{{ fileira }}">{{ fileira }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="graus">Graus:</label>
+            <select name="graus" id="graus" required>
+                <option value="">Selecione os graus</option>
+                {% for grau in graus %}
+                    <option value="{{ grau }}">{{ grau }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="regiao">Região:</label>
+            <select id="regiao" name="regiao" disabled>
+                {% for regiao in regioes %}
+                    <option value="{{ regiao }}" {% if regiao == regiao_selecionada %}selected{% endif %}>
+                        {{ regiao }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="modulo">Módulo:</label>
+            <select name="modulo" id="modulo" required>
+                <option value="">Selecione o módulo</option>
+                {% for modulo in modulos %}
+                    <option value="{{ modulo }}">{{ modulo }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" name="quantidade" id="quantidade" required>
+
+            <button type="submit">Calcular</button>
+        </form>
+
+        {% if preco is not none %}
+        <div class="result">
+            <h2>Resultado:</h2>
+            <p>Preço da Mesa/Módulo: <strong>R$ {{ preco }}</strong></p>
+        </div>
+        {% endif %}
+
+        {% if total is not none %}
+        <div class="result">
+            <h2>Valor Total:</h2>
+            <p>Total em Reais: <strong>R$ {{ total }}</strong></p>
+        </div>
+        {% endif %}
+
+        {% if mensagem_erro %}
+        <p class="error">{{ mensagem_erro }}</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        © 2025 SolarGroup - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

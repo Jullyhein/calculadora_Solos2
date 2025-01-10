@@ -1,0 +1,17 @@
+# Arquivos e pastas comuns a ignorar
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+.idea/
+*.log
+node_modules/
+dist/
+build/
+.env
+.venv/
+*.sqlite3
+
+# Arquivos temporários
+*.tmp
+*.swp
